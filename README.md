@@ -84,9 +84,9 @@ This portfolio was created to present my skills, learning progress, and web deve
 
 You may add your contact information below:
 
-Email: Add your email address
+Email: mariellearizala3@gmail.com
 
-GitHub: Add your GitHub profile link
+GitHub: https://github.com/mariellearizala3-lab
 
 Facebook/LinkedIn: Add your social media link
 
