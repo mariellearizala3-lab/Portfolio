@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Marielle Arizala — aspiring web developer and UI/UX designer.">
+  <title>Marielle Arizala — Web Developer & UI/UX Designer</title>
+  <style>
+    /* =========================================================
+       01. DESIGN TOKENS / RESET
+       ========================================================= */
+    :root{
+      --bg:#faf9fc;--surface:#fff;--surface-2:#f4f1f8;--text:#211d29;--muted:#6f6878;
+      --line:#e8e1ed;--accent:#7c3aed;--accent-2:#ec4899;--accent-3:#f59e0b;
+      --gradient:linear-gradient(135deg,var(--accent),var(--accent-2),var(--accent-3));
+      --shadow:0 18px 55px rgba(42,25,60,.10);--shadow-sm:0 8px 25px rgba(42,25,60,.08);
+      --radius:18px;--radius-sm:12px;--max:1180px;--ease:cubic-bezier(.2,.8,.2,1);
+    }
+    [data-theme="dark"]{
+      --bg:#111016;--surface:#19171e;--surface-2:#24202a;--text:#f7f3fa;--muted:#aaa1b1;
+      --line:#332e39;--shadow:0 18px 55px rgba(0,0,0,.35);--shadow-sm:0 8px 25px rgba(0,0,0,.25);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:82px}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;overflow-x:hidden}
+    body.menu-open,body.modal-open{overflow:hidden}
+    button,input,textarea{font:inherit}
+    button,a{color:inherit}
+    a{text-decoration:none}
+    img,svg{max-width:100%}
+    :focus-visible{outline:3px solid var(--accent-2);outline-offset:3px}
+    ::selection{background:rgba(124,58,237,.2)}
+    .container{width:min(calc(100% - 32px),var(--max));margin-inline:auto}
+    .section{padding:92px 0}
+    .section__head{margin-bottom:42px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
+    .eyebrow::before{content:"";width:25px;height:2px;background:var(--gradient);border-radius:99px}
+    h1,h2,h3{line-height:1.1;margin:0 0 16px;letter-spacing:-.035em}
+    h1{font-size:clamp(2.7rem,8vw,5.5rem)}
+    h2{font-size:clamp(2rem,5vw,3.4rem)}
+    h3{font-size:1.2rem}
+    p{max-width:65ch;color:var(--muted)}
+    .muted{color:var(--muted)}
+    .gradient-text{background:var(--gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:999px;padding:12px 19px;min-height:46px;background:var(--gradient);color:#fff;font-weight:800;cursor:pointer;overflow:hidden;box-shadow:0 8px 24px rgba(124,58,237,.18);transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(124,58,237,.28)}
+    .btn--ghost{background:transparent;color:var(--text);border:1px solid var(--line);box-shadow:none}
+    .btn--ghost:hover{background:var(--surface-2)}
+    .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.4);transform:scale(0);animation:ripple .55s ease-out;pointer-events:none}
+    @keyframes ripple{to{transform:scale(4);opacity:0}}
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+    .reveal.is-visible{opacity:1;transform:none}
+    .stagger>*{transition-delay:calc(var(--i,0) * 70ms)}
+
+    /* =========================================================
+       02. PROGRESS / HEADER
+       ========================================================= */
+    .progress{position:fixed;z-index:1000;top:0;left:0;height:3px;width:100%;transform-origin:left;background:var(--gradient);transform:scaleX(0)}
+    .header{position:sticky;top:0;z-index:900;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+    .nav{height:76px;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-weight:900;letter-spacing:-.04em;font-size:1.05rem}
+    .logo span{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--gradient);margin-left:5px}
+    .nav__links{display:none;align-items:center;gap:4px}
+    .nav__links a{padding:8px 11px;color:var(--muted);font-size:.9rem;font-weight:700;position:relative}
+    .nav__links a::after{content:"";position:absolute;left:11px;right:11px;bottom:2px;height:2px;background:var(--gradient);transform:scaleX(0);transform-origin:center;transition:transform .25s}
+    .nav__links a.active,.nav__links a:hover{color:var(--text)}
+    .nav__links a.active::after{transform:scaleX(1)}
+    .nav__actions{display:flex;align-items:center;gap:8px}
+    .icon-btn{width:42px;height:42px;border:1px solid var(--line);background:var(--surface);border-radius:50%;display:grid;place-items:center;cursor:pointer}
+    .hamburger{display:grid}
+    .hamburger span{display:block;width:19px;height:2px;background:var(--text);margin:2px;transition:.25s}
+    .mobile-nav{position:fixed;z-index:850;inset:76px 12px auto 12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px;box-shadow:var(--shadow);transform:translateY(-18px);opacity:0;pointer-events:none;transition:.3s var(--ease)}
+    .mobile-nav.is-open{transform:none;opacity:1;pointer-events:auto}
+    .mobile-nav a{display:block;padding:14px;border-radius:12px;font-weight:750}
+    .mobile-nav a:hover,.mobile-nav a.active{background:var(--surface-2);color:var(--accent)}
+
+    /* =========================================================
+       03. HERO
+       ========================================================= */
+    .hero{min-height:calc(100vh - 76px);display:grid;align-items:center;position:relative;overflow:hidden;padding:65px 0}
+    .hero__blob{position:absolute;width:520px;height:520px;border-radius:50%;right:-230px;top:-120px;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(236,72,153,.2),rgba(245,158,11,.18));filter:blur(3px);animation:blob 13s ease-in-out infinite}
+    .hero__blob::after{content:"";position:absolute;inset:100px;background:var(--bg);border-radius:50%;filter:blur(10px)}
+    @keyframes blob{50%{transform:translate(-40px,35px) scale(1.08) rotate(20deg)}}
+    .float{position:absolute;border:1px solid rgba(124,58,237,.15);border-radius:25%;animation:float 7s ease-in-out infinite}
+    .float--one{width:50px;height:50px;right:17%;top:25%;transform:rotate(20deg)}
+    .float--two{width:30px;height:30px;left:8%;bottom:23%;border-radius:50%;animation-delay:-2s}
+    @keyframes float{50%{transform:translateY(-20px) rotate(30deg)}}
+    .hero__content{position:relative;z-index:2}
+    .hero__kicker{font-weight:800;color:var(--accent);margin-bottom:18px}
+    .hero h1{max-width:900px}
+    .typing{display:inline-block;min-width:5ch}
+    .typing::after{content:"";display:inline-block;width:3px;height:.8em;background:currentColor;margin-left:5px;animation:blink 1s step-end infinite;vertical-align:-.08em}
+    @keyframes blink{50%{opacity:0}}
+    .hero__tagline{font-size:clamp(1rem,2vw,1.2rem);max-width:680px;margin:22px 0 30px}
+    .hero__cta{display:flex;flex-wrap:wrap;gap:12px}
+    .scroll-hint{margin-top:70px;display:inline-flex;align-items:center;gap:9px;color:var(--muted);font-size:.82rem;font-weight:750;background:none;border:0;cursor:pointer}
+    .scroll-hint span{width:25px;height:40px;border:1px solid var(--line);border-radius:20px;display:grid;place-items:center}
+    .scroll-hint i{display:block;width:3px;height:7px;background:var(--accent);border-radius:5px;animation:scrollDot 1.6s infinite}
+    @keyframes scrollDot{50%{transform:translateY(8px)}}
+
+    /* =========================================================
+       04. ABOUT
+       ========================================================= */
+    .about-grid{display:grid;gap:35px}
+    .about-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);overflow:hidden}
+    .avatar{aspect-ratio:1/1;display:grid;place-items:center;background:linear-gradient(145deg,var(--surface-2),var(--surface));border-radius:15px}
+    .avatar svg{width:80%;height:80%}
+    .avatar img{ width: 100%; height:100%; object-fit: cover; border-radius: 15px; display: block}
+    .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:28px 0}
+    .fact{padding:16px;background:var(--surface-2);border-radius:14px}
+    .fact b{display:block;font-size:.82rem}
+    .fact span{font-size:.78rem;color:var(--muted)}
+    .resume-row{display:flex;flex-wrap:wrap;gap:10px}
+
+    /* =========================================================
+       05. SKILLS
+       ========================================================= */
+    .skill-filters,.project-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:25px}
+    .filter-btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 15px;font-weight:750;cursor:pointer;color:var(--muted)}
+    .filter-btn.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+    .skills-grid{display:grid;gap:16px}
+    .skill-group{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:opacity .3s,transform .3s}
+    .skill-group.hidden{display:none}
+    .skill{margin-top:18px}
+    .skill__meta{display:flex;justify-content:space-between;font-size:.87rem;font-weight:750}
+    .skill__track{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:8px}
+    .skill__fill{height:100%;width:0;border-radius:inherit;background:var(--gradient);transition:width 1.1s var(--ease)}
+
+    /* =========================================================
+       06. PROJECTS
+       ========================================================= */
+    .projects-grid{display:grid;grid-template-columns:1fr;gap:18px}
+    .project{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:23px;min-height:300px;display:flex;flex-direction:column;transform-style:preserve-3d;transition:opacity .3s,transform .3s,box-shadow .3s;will-change:transform}
+    .project.is-hidden{display:none}
+    .project:hover{box-shadow:var(--shadow)}
+    .project__top{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
+    .project__num{font-weight:900;color:var(--accent)}
+    .project__icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(124,58,237,.14),rgba(236,72,153,.12));font-size:1.3rem}
+    .project p{font-size:.92rem}
+    .tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 20px}
+    .tag{font-size:.72rem;font-weight:800;padding:5px 9px;background:var(--surface-2);border-radius:99px}
+    .project__actions{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}
+    .project__actions .btn{min-height:38px;padding:8px 13px;font-size:.78rem}
+    .project__actions a{display:inline-flex}
+
+    /* =========================================================
+       07. TIMELINE
+       ========================================================= */
+    .timeline{position:relative;max-width:900px;margin:auto}
+    .timeline::before{content:"";position:absolute;left:9px;top:5px;bottom:5px;width:2px;background:var(--line)}
+    .timeline__item{position:relative;padding-left:38px;margin-bottom:35px}
+    .timeline__dot{position:absolute;left:2px;top:4px;width:16px;height:16px;border-radius:50%;background:var(--gradient);box-shadow:0 0 0 5px var(--bg)}
+    .timeline__card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:21px}
+    .timeline__date{font-size:.78rem;font-weight:850;color:var(--accent);margin-bottom:7px}
+
+    /* =========================================================
+       08. CONTACT / FOOTER
+       ========================================================= */
+    .contact-grid{display:grid;gap:30px}
+    .contact-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+    .field{margin-bottom:17px}
+    label{display:block;font-size:.82rem;font-weight:800;margin-bottom:7px}
+    input,textarea{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--text);padding:12px 13px;outline:none;transition:border-color .2s,box-shadow .2s}
+    input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+    textarea{min-height:135px;resize:vertical}
+    .error{display:block;min-height:18px;font-size:.75rem;color:#dc2626;margin-top:4px}
+    .field.invalid input,.field.invalid textarea{border-color:#dc2626}
+    .success{display:none;text-align:center;padding:30px 10px}
+    .success.show{display:block}
+    .form-hidden{display:none}
+    .socials{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}
+    .social{border:1px solid var(--line);padding:9px 13px;border-radius:999px;font-size:.82rem;font-weight:750;background:var(--surface)}
+    .footer{border-top:1px solid var(--line);padding:28px 0}
+    .footer__inner{display:flex;align-items:center;justify-content:space-between;gap:15px}
+    .top-btn{border:1px solid var(--line);background:var(--surface);border-radius:50%;width:42px;height:42px;cursor:pointer;opacity:0;pointer-events:none;transition:.25s}
+    .top-btn.show{opacity:1;pointer-events:auto}
+
+    /* =========================================================
+       09. DEMO MODAL
+       ========================================================= */
+    .modal{position:fixed;z-index:1200;inset:0;background:rgba(9,7,13,.72);backdrop-filter:blur(8px);display:grid;place-items:center;padding:10px;opacity:0;pointer-events:none;transition:opacity .25s}
+    .modal.open{opacity:1;pointer-events:auto}
+    .browser{width:min(1400px,100%);height:min(900px,96vh);background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.45);display:flex;flex-direction:column;transform:scale(.97);transition:transform .25s}
+    .modal.open .browser{transform:none}
+    .chrome{height:52px;flex:0 0 52px;display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+    .traffic{display:flex;gap:6px}
+    .traffic i{width:11px;height:11px;border-radius:50%;background:#bbb}
+    .traffic i:first-child{background:#ff6b6b}.traffic i:nth-child(2){background:#ffd166}.traffic i:nth-child(3){background:#4ade80}
+    .urlbar{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 12px;font-size:.76rem;color:var(--muted);overflow:hidden;white-space:nowrap}
+    .modal-close{width:34px;height:34px;border:1px solid var(--line);background:var(--surface);border-radius:8px;cursor:pointer}
+    #demoFrame{width:100%;height:100%;border:0;background:#fff}
+    .cursor-glow{position:fixed;z-index:1;pointer-events:none;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.12),transparent 65%);transform:translate(-50%,-50%);display:none}
+
+    /* =========================================================
+       10. RESPONSIVE
+       ========================================================= */
+    @media(min-width:700px){
+      .container{width:min(calc(100% - 48px),var(--max))}
+      .about-grid{grid-template-columns:.9fr 1.1fr;align-items:center}
+      .skills-grid{grid-template-columns:repeat(3,1fr)}
+      .projects-grid{grid-template-columns:repeat(2,1fr)}
+      .contact-grid{grid-template-columns:.8fr 1.2fr;align-items:start}
+      .timeline::before{left:50%;transform:translateX(-50%)}
+      .timeline__item{width:50%;padding-left:0;padding-right:45px}
+      .timeline__item:nth-child(even){margin-left:50%;padding-right:0;padding-left:45px}
+      .timeline__dot{left:auto;right:-8px}
+      .timeline__item:nth-child(even) .timeline__dot{right:auto;left:-8px}
+    }
+    @media(min-width:960px){
+      .nav__links{display:flex}.hamburger,.mobile-nav{display:none}
+      .projects-grid{grid-template-columns:repeat(3,1fr)}
+      .hero{min-height:calc(100vh - 76px)}
+      .cursor-glow{display:block}
+    }
+    @media(max-width:420px){.facts{grid-template-columns:1fr}.section{padding:72px 0}.hero__cta .btn{width:100%}}
+    @media(prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+      .reveal{opacity:1;transform:none}
+      .cursor-glow{display:none!important}
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+  <header class="header">
+    <nav class="nav container" aria-label="Primary navigation">
+      <a class="logo" href="#home" data-scroll="home">Marielle Arizala<span></span></a>
+      <div class="nav__links" id="desktopNav"></div>
+      <div class="nav__actions">
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle color theme">☾</button>
+        <button class="icon-btn hamburger" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation"></nav>
+
+  <main>
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="hero__blob" aria-hidden="true"></div>
+      <div class="float float--one" aria-hidden="true"></div>
+      <div class="float float--two" aria-hidden="true"></div>
+      <div class="hero__content container reveal">
+        <div class="hero__kicker">Aspiring developer · UI/UX designer</div>
+        <h1 id="hero-title">Building thoughtful <span class="gradient-text typing" id="typing"></span> experiences.</h1>
+        <p class="hero__tagline">I turn ideas into accessible, polished digital experiences where useful technology meets warm, human-centered design.</p>
+        <div class="hero__cta">
+          <button class="btn" type="button" data-scroll="projects">View My Work <span>↗</span></button>
+          <button class="btn btn--ghost" type="button" data-scroll="contact">Get In Touch</button>
+        </div>
+        <button class="scroll-hint" type="button" data-scroll="about"><span><i></i></span> Scroll to explore</button>
+      </div>
+    </section>
+
+    <section class="section" id="about" aria-labelledby="about-title">
+      <div class="container">
+        <div class="section__head reveal"><span class="eyebrow">About</span><h2 id="about-title">Curious by nature, <span class="gradient-text">intentional by design.</span></h2></div>
+        <div class="about-grid">
+          <div class="about-card reveal">
+            <div class="avatar">
+              <img id="profileImage" src="picture.jpg" alt="Portrait of Marielle Arizala">
+                <defs><linearGradient id="av" x1="0" x2="1"><stop stop-color="#7c3aed"/><stop offset=".55" stop-color="#ec4899"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs>
+                <circle cx="200" cy="200" r="165" fill="url(#av)" opacity=".15"/>
+                <path d="M105 315c13-67 50-100 95-100s82 33 95 100" fill="#211d29" opacity=".9"/>
+                <circle cx="200" cy="145" r="70" fill="#f5c9ad"/>
+                <path d="M130 145c3-72 133-91 142 7-30-30-83-36-142-7Z" fill="#2d2333"/>
+                <circle cx="175" cy="153" r="6" fill="#211d29"/><circle cx="225" cy="153" r="6" fill="#211d29"/>
+                <path d="M180 183q20 13 40 0" fill="none" stroke="#8b4b55" stroke-width="5" stroke-linecap="round"/>
+                <path d="M102 316q98 35 196 0" fill="none" stroke="url(#av)" stroke-width="15" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="reveal">
+            <p id="bio1"></p><p id="bio2"></p>
+            <div class="facts" id="facts"></div>
+            <div class="resume-row"><button class="btn" id="resumeBtn" type="button">Download Résumé ↓</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="skills" aria-labelledby="skills-title">
+      <div class="container">
+        <div class="section__head reveal"><span class="eyebrow">Skills</span><h2 id="skills-title">A practical creative <span class="gradient-text">toolkit.</span></h2></div>
+        <div class="skill-filters reveal" id="skillFilters"></div>
+        <div class="skills-grid stagger" id="skillsGrid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="projects" aria-labelledby="projects-title">
+      <div class="container">
+        <div class="section__head reveal"><span class="eyebrow">Selected work</span><h2 id="projects-title">Projects that make ideas <span class="gradient-text">tangible.</span></h2></div>
+        <div class="project-filters reveal" id="projectFilters"></div>
+        <div class="projects-grid stagger" id="projectsGrid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="experience" aria-labelledby="experience-title">
+      <div class="container">
+        <div class="section__head reveal"><span class="eyebrow">Journey</span><h2 id="experience-title">Experience & <span class="gradient-text">education.</span></h2></div>
+        <div class="timeline stagger" id="timeline"></div>
+      </div>
+    </section>
+
+    <section class="section" id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <div class="contact-grid">
+          <div class="reveal">
+            <span class="eyebrow">Contact</span>
+            <h2 id="contact-title">Let's build something <span class="gradient-text">meaningful.</span></h2>
+            <p>Have a project, internship opportunity, or simply an idea worth exploring? Send a message and I'll get back to you.</p>
+            <div class="socials" id="socials"></div>
+          </div>
+          <div class="contact-card reveal">
+            <form id="contactForm" novalidate>
+              <div class="field"><label for="name">Name</label><input id="name" name="name" autocomplete="name" required><span class="error" id="nameError" aria-live="polite"></span></div>
+              <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required><span class="error" id="emailError" aria-live="polite"></span></div>
+              <div class="field"><label for="subject">Subject</label><input id="subject" name="subject" required><span class="error" id="subjectError" aria-live="polite"></span></div>
+              <div class="field"><label for="message">Message</label><textarea id="message" name="message" required></textarea><span class="error" id="messageError" aria-live="polite"></span></div>
+              <button class="btn" id="sendBtn" type="submit">Send Message <span>→</span></button>
+            </form>
+            <div class="success" id="success" aria-live="polite">
+              <div style="font-size:2.5rem">✦</div>
+              <h3>Message sent!</h3>
+              <p>Thanks for reaching out. This demo form doesn't transmit data, but your submission was validated successfully.</p>
+              <button class="btn btn--ghost" id="anotherBtn" type="button">Send another message</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <small>© <span id="year"></span> Marielle Arizala</small>
+      <button class="top-btn" id="topBtn" type="button" aria-label="Back to top">↑</button>
+    </div>
+  </footer>
+
+  <div class="modal" id="demoModal" role="dialog" aria-modal="true" aria-labelledby="demoTitle">
+    <div class="browser">
+      <div class="chrome">
+        <div class="traffic" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="urlbar" id="demoTitle">marielle.dev/demos</div>
+        <button class="modal-close" id="modalClose" type="button" aria-label="Close demo">✕</button>
+      </div>
+      <iframe id="demoFrame" title="Interactive project demo"></iframe>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       CONFIG — EDIT THIS OBJECT TO PERSONALIZE THE PORTFOLIO
+       Replace the clearly marked placeholder values with your
+       real information. The rest of the page renders from here.
+       ========================================================= */
+    const CONFIG = {
+      name:"Marielle Arizala",
+      email:"hello@marielle-arizala.dev", // CHANGE: your real email
+      roles:["Aspiring Web Developer","Front-End Enthusiast","UI/UX Explorer","Creative Coder"],
+      bio:[
+        "I'm an aspiring web developer and UI/UX designer who enjoys turning complex ideas into simple, welcoming interfaces. I care about semantic HTML, thoughtful interaction, accessibility, and details that make a product feel effortless.",
+        "My approach combines design thinking with practical frontend development. I like prototyping quickly, learning from feedback and building responsive experiences that work just as well on a small phone as they do on a large screen.",
+        "I fell in love with vibe coding when I realized I could build entire worlds using just a browser and a text editor."
+      ],
+      facts:[
+        ["Location","Masbate, Philippines"],["Focus","Web + UI/UX"],["Availability","Open to opportunities"],["Coffee","Always"]
+      ],
+      skills:[
+        {group:"Frontend",icon:"⌘",items:[["HTML5 & Semantic Markup",85],["CSS3, Flexbox & Grid",80],["JavaScript (ES6+)",65],["Responsive Design",75],["Accessibility Basics",55]]},
+        {group:"Design and UX items",icon:"✦",items:[["Figma",60],["UI/UX Fundamentals",55],["Color & Typography",65]]},
+        {group:"Tools & Workflow",icon:"⚙",items:[["Git & GitHub",65],["VS Code",55],["Chrome DevTools",70],["Command Line Basics",50]]},
+        {group:"Soft Skills",icon:"🤝",items:[["Problem Solving",80],["Communication",75],["Attention to Detail",70],["Continuous Learning",90]]}
+
+      ],
+      projects:[
+        {title:"Activity 1- User Registration Form", category:"Web",icon:"📝",description:"A user registration form with profile picture, audio, video and form validation.",tags:["HTML","CSS","JavaScript"], url:"https://mariellearizala3-lab.github.io/my-html-projects/student_form.html", github:"https://mariellearizala3-lab.github.io/my-html-projects/student_form.html"},
+        {title:"Teacher's Day Message Card",category:"CreativeWeb",icon:"💌",description:"An interactive Teacher's Day message card with animations and effects.",tags:["JavaScript","UX","CSS"], url:"https://mariellearizala3-lab.github.io/my-html-projects/teacher-day.html", github:"https://mariellearizala3-lab.github.io/my-html-projects/teacher-day.html"},
+      ],
+      experience:[
+      
+        {date:"2021 — 2022",type:"Experience",title:"Computer Technician Assistant",org:"C.KOK International Corp.",text:" Entry-level role focused on helping set up equipment, installing software, and managing inventory."},
+        {date:"2022 — Current",type:"Education",title:"B.S. Information Systems",org:"DEBESMSCAT",text:"Design, implement and manage computer-based information systems for organizations"},
+        {date:"2019 — 2021",type:"Education",title:"Senior High School--TVL Strand",org:"Sisters of Mary School-Girlstown, Inc.",text:"Computer Systems Servicing NC II and Electronic Products Assembly and Servicing NC II."}
+      ],
+      socials:[
+        ["Email","mailto:hello@marielle-arizala.dev"], // CHANGE
+        ["GitHub","https://github.com/"], // CHANGE
+        ["LinkedIn","https://www.linkedin.com/"] // CHANGE
+      ]
+    };
+
+    /* =========================================================
+       RENDER CONTENT
+       ========================================================= */
+    const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+    const navItems=[["Home","home"],["About","about"],["Skills","skills"],["Projects","projects"],["Experience","experience"],["Contact","contact"]];
+    $("#bio1").textContent=CONFIG.bio[0];$("#bio2").textContent=CONFIG.bio[1];
+    $("#facts").innerHTML=CONFIG.facts.map(x=>`<div class="fact"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
+    $("#desktopNav").innerHTML=navItems.map(x=>`<a href="#${x[1]}" data-scroll="${x[1]}">${x[0]}</a>`).join("");
+    $("#mobileNav").innerHTML=navItems.map(x=>`<a href="#${x[1]}" data-scroll="${x[1]}">${x[0]}</a>`).join("");
+    $("#year").textContent=new Date().getFullYear();
+    $("#socials").innerHTML=CONFIG.socials.map(x=>`<a class="social" href="${x[1]}" ${x[1].startsWith("http")?'target="_blank" rel="noopener noreferrer"':''}>${x[0]} ↗</a>`).join("");
+
+    /* =========================================================
+       NAVIGATION / SCROLLING
+       ========================================================= */
+    function scrollToSection(id){
+      const el=$("#"+id);if(!el)return;
+      el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+      history.replaceState(null,"","#"+id);
+      closeMenu();
+    }
+    document.addEventListener("click",e=>{
+      const trigger=e.target.closest("[data-scroll]");
+      if(trigger){e.preventDefault();scrollToSection(trigger.dataset.scroll)}
+    });
+    const sections=navItems.map(x=>$("#"+x[1]));
+    const navLinks=$$("#desktopNav a"),mobileLinks=$$("#mobileNav a");
+    const io=new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting){
+          const id=en.target.id;
+          [...navLinks,...mobileLinks].forEach(a=>a.classList.toggle("active",a.dataset.scroll===id));
+        }
+      })
+    },{rootMargin:"-35% 0px -55% 0px"});
+    sections.forEach(s=>io.observe(s));
+
+    /* =========================================================
+       MOBILE MENU / FOCUS TRAP
+       ========================================================= */
+    const menu=$("#mobileNav"),menuBtn=$("#menuToggle");
+    let menuOpen=false;
+    function openMenu(){menuOpen=true;menu.classList.add("is-open");document.body.classList.add("menu-open");menuBtn.setAttribute("aria-expanded","true");menuBtn.setAttribute("aria-label","Close menu");setTimeout(()=>menu.querySelector("a")?.focus(),50)}
+    function closeMenu(){menuOpen=false;menu.classList.remove("is-open");document.body.classList.remove("menu-open");menuBtn.setAttribute("aria-expanded","false");menuBtn.setAttribute("aria-label","Open menu")}
+    menuBtn.addEventListener("click",()=>menuOpen?closeMenu():openMenu());
+    document.addEventListener("click",e=>{if(menuOpen&&!menu.contains(e.target)&&!menuBtn.contains(e.target))closeMenu()});
+
+    /* =========================================================
+       THEME
+       ========================================================= */
+    const themeBtn=$("#themeToggle");
+    const savedTheme=localStorage.getItem("marielle-theme");
+    const preferred=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+    function setTheme(theme){document.documentElement.dataset.theme=theme;localStorage.setItem("marielle-theme",theme);themeBtn.textContent=theme==="dark"?"☀":"☾";themeBtn.setAttribute("aria-label",theme==="dark"?"Switch to light theme":"Switch to dark theme")}
+    setTheme(savedTheme||preferred);
+    themeBtn.onclick=()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
+
+    /* =========================================================
+       HERO TYPING EFFECT
+       ========================================================= */
+    const typing=$("#typing");let roleIndex=0,charIndex=0,deleting=false;
+    function typeLoop(){
+      if(matchMedia("(prefers-reduced-motion: reduce)").matches){typing.textContent=CONFIG.roles[0];return}
+      const word=CONFIG.roles[roleIndex];typing.textContent=word.slice(0,charIndex);
+      let delay=deleting?45:85;
+      if(!deleting&&charIndex===word.length){delay=1500;deleting=true}
+      else if(deleting&&charIndex===0){deleting=false;roleIndex=(roleIndex+1)%CONFIG.roles.length;delay=350}
+      else charIndex+=deleting?-1:1;
+      setTimeout(typeLoop,delay)
+    }
+    typeLoop();
+
+    /* =========================================================
+       SKILLS
+       ========================================================= */
+    const categories=["All",...CONFIG.skills.map(x=>x.group)];
+    $("#skillFilters").innerHTML=categories.map((x,i)=>`<button class="filter-btn ${i===0?"active":""}" type="button" data-skill-filter="${x}">${x}</button>`).join("");
+    $("#skillsGrid").innerHTML=CONFIG.skills.map((g,gi)=>`<article class="skill-group reveal" data-group="${g.group}" style="--i:${gi}"><h3>${g.icon} ${g.group}</h3>${g.items.map(s=>`<div class="skill"><div class="skill__meta"><span>${s[0]}</span><span>${s[1]}%</span></div><div class="skill__track"><div class="skill__fill" data-percent="${s[1]}"></div></div></div>`).join("")}</article>`).join("");
+    $("#skillFilters").onclick=e=>{
+      const b=e.target.closest("[data-skill-filter]");if(!b)return;
+      $$("#skillFilters .filter-btn").forEach(x=>x.classList.toggle("active",x===b));
+      const f=b.dataset.skillFilter;
+      $$("#skillsGrid .skill-group").forEach(g=>g.classList.toggle("hidden",f!=="All"&&g.dataset.group!==f));
+    };
+
+    /* =========================================================
+       PROJECTS / FILTER / TILT
+       ========================================================= */
+    const projectCats=["All","Web","UI-UX","Creative Web","Other"];
+    $("#projectFilters").innerHTML=projectCats.map((x,i)=>`<button class="filter-btn ${i===0?"active":""}" type="button" data-project-filter="${x}">${x}</button>`).join("");
+    $("#projectsGrid").innerHTML=CONFIG.projects.map((p,i)=>`<article class="project reveal" data-category="${p.category}" style="--i:${i}">
+      <div class="project__top"><span class="project__num">0${i+1}</span><span class="project__icon">${p.icon}</span></div>
+      <h3>${p.title}</h3><p>${p.description}</p>
+      <div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      <div class="project__actions">
+        <button class="btn" type="button" data-demo="${i}">Live Demo ↗</button>
+        <a class="btn btn--ghost" href="${p.url}" target="_blank" rel="noopener noreferrer">Visit Site ↗</a>
+      </div>
+    </article>`).join("");
+    $("#projectFilters").onclick=e=>{
+      const b=e.target.closest("[data-project-filter]");if(!b)return;
+      $$("#projectFilters .filter-btn").forEach(x=>x.classList.toggle("active",x===b));
+      const f=b.dataset.projectFilter;
+      $$("#projectsGrid .project").forEach(card=>{
+        const show=f==="All"||card.dataset.category===f;
+        card.classList.toggle("is-hidden",!show);
+      });
+    };
+    $$("#projectsGrid .project").forEach(card=>{
+      card.addEventListener("mousemove",e=>{
+        if(matchMedia("(prefers-reduced-motion: reduce)").matches||matchMedia("(pointer:coarse)").matches)return;
+        const r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+        card.style.transform=`perspective(900px) rotateX(${y*-5}deg) rotateY(${x*5}deg) translateY(-3px)`;
+      });
+      card.addEventListener("mouseleave",()=>card.style.transform="");
+    });
+
+    /* =========================================================
+       EXPERIENCE
+       ========================================================= */
+    $("#timeline").innerHTML=CONFIG.experience.map((x,i)=>`<article class="timeline__item reveal" style="--i:${i}"><span class="timeline__dot"></span><div class="timeline__card"><div class="timeline__date">${x.date} · ${x.type}</div><h3>${x.title}</h3><strong>${x.org}</strong><p>${x.text}</p></div></article>`).join("");
+
+    /* =========================================================
+       SCROLL REVEALS / PROGRESS / BACK TO TOP
+       ========================================================= */
+    const revealIO=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("is-visible");e.target.querySelectorAll?.(".skill__fill").forEach(f=>f.style.width=f.dataset.percent+"%");revealIO.unobserve(e.target)}})
+    },{threshold:.12});
+    $$(".reveal").forEach(x=>revealIO.observe(x));
+    $$(".skill__fill").forEach(x=>{if(!x.closest(".reveal"))revealIO.observe(x.closest(".skill-group"))});
+    const progress=$("#progress"),topBtn=$("#topBtn");
+    let ticking=false;
+    function scrollUpdate(){
+      const max=document.documentElement.scrollHeight-innerHeight;
+      progress.style.transform=`scaleX(${max>0?scrollY/max:0})`;
+      topBtn.classList.toggle("show",scrollY>400);
+      ticking=false;
+    }
+    addEventListener("scroll",()=>{if(!ticking){requestAnimationFrame(scrollUpdate);ticking=true}},{passive:true});
+    scrollUpdate();
+    topBtn.onclick=()=>scrollToSection("home");
+
+    /* =========================================================
+       RESUME GENERATOR
+       ========================================================= */
+    $("#resumeBtn").onclick=()=>{
+      const text=[
+        CONFIG.name.toUpperCase(),"Aspiring Web Developer & UI/UX Designer","",
+        "CONTACT",CONFIG.email,"",
+        "PROFILE",...CONFIG.bio,"",
+        "SKILLS",...CONFIG.skills.flatMap(g=>[g.group,...g.items.map(s=>"- "+s[0]+" ("+s[1]+"%)")]),"",
+        "EXPERIENCE & EDUCATION",...CONFIG.experience.flatMap(x=>[x.date+" | "+x.title+" — "+x.org,x.text,""])
+      ].join("\n");
+      const url=URL.createObjectURL(new Blob([text],{type:"text/plain"})),a=document.createElement("a");
+      a.href=url;a.download="Marielle-Arizala-Resume.txt";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    };
+
+    /* =========================================================
+       DEMO MODAL / FOCUS TRAP
+       ========================================================= */
+    const modal=$("#demoModal"),frame=$("#demoFrame"),close=$("#modalClose");
+    let opener=null;
+    function openDemo(index){
+      opener=document.activeElement;
+      const p=CONFIG.projects[index];
+      $("#demoTitle").textContent="marielle.dev/demos/"+p.path;
+      frame.src=p.url;
+      modal.classList.add("open");document.body.classList.add("modal-open");
+      setTimeout(()=>close.focus(),30);
+    }
+    function closeDemo(){
+      modal.classList.remove("open");document.body.classList.remove("modal-open");
+      frame.srcdoc="";if(opener&&document.contains(opener))opener.focus();
+    }
+    $("#projectsGrid").addEventListener("click",e=>{const b=e.target.closest("[data-demo]");if(b)openDemo(+b.dataset.demo)});
+    close.onclick=closeDemo;
+    modal.addEventListener("click",e=>{if(e.target===modal)closeDemo()});
+    modal.addEventListener("keydown",e=>{
+      if(e.key==="Escape"){e.preventDefault();closeDemo();return}
+      if(e.key!=="Tab")return;
+      const focusables=$$("button,[href],input,textarea,select,[tabindex]:not([tabindex='-1'])",modal).filter(x=>!x.disabled);
+      const first=focusables[0],last=focusables[focusables.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+    });
+
+    /* =========================================================
+       MENU FOCUS / GLOBAL ESCAPE
+       ========================================================= */
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape"&&menuOpen)closeMenu();
+      if(menuOpen&&e.key==="Tab"){
+        const fs=$$("a",menu),first=fs[0],last=fs[fs.length-1];
+        if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+        else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+      }
+    });
+
+    /* =========================================================
+       CONTACT FORM VALIDATION / FAKE ASYNC SUBMIT
+       ========================================================= */
+    const form=$("#contactForm"),success=$("#success");
+    const fields=[["name",v=>v.trim().length>=2,"Please enter your name."],["email",v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),"Please enter a valid email address."],["subject",v=>v.trim().length>=3,"Please enter a subject."],["message",v=>v.trim().length>=10,"Please write at least 10 characters."]];
+    function validateField(name){
+      const input=$("#"+name),cfg=fields.find(x=>x[0]===name),err=$("#"+name+"Error"),ok=cfg[1](input.value);
+      err.textContent=ok?"":cfg[2];input.parentElement.classList.toggle("invalid",!ok);input.setAttribute("aria-invalid",String(!ok));return ok;
+    }
+    fields.forEach(x=>$("#"+x[0]).addEventListener("input",()=>validateField(x[0])));
+    form.addEventListener("submit",e=>{
+      e.preventDefault();const valid=fields.every(x=>validateField(x[0]));if(!valid)return;
+      const btn=$("#sendBtn");btn.disabled=true;btn.textContent="Sending…";
+      setTimeout(()=>{form.classList.add("form-hidden");success.classList.add("show");btn.disabled=false},900);
+    });
+    $("#anotherBtn").onclick=()=>{form.reset();form.classList.remove("form-hidden");success.classList.remove("show");fields.forEach(x=>validateField(x[0]));$("#name").focus()};
+
+    /* =========================================================
+       RIPPLE EFFECT — DELEGATED FOR ALL .btn ELEMENTS
+       ========================================================= */
+    document.addEventListener("click",e=>{
+      const b=e.target.closest(".btn");if(!b)return;
+      const r=b.getBoundingClientRect(),size=Math.max(r.width,r.height),wave=document.createElement("span");
+      wave.className="ripple";wave.style.width=wave.style.height=size+"px";wave.style.left=e.clientX-r.left-size/2+"px";wave.style.top=e.clientY-r.top-size/2+"px";b.appendChild(wave);wave.addEventListener("animationend",()=>wave.remove());
+    });
+
+    /* =========================================================
+       POINTER GLOW / EASTER EGG
+       ========================================================= */
+    const glow=$("#cursorGlow");let gx=0,gy=0,glx=0,gly=0;
+    if(matchMedia("(pointer:fine)").matches&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
+      addEventListener("pointermove",e=>{gx=e.clientX;gy=e.clientY});
+      function glowLoop(){glx+=(gx-glx)*.12;gly+=(gy-gly)*.12;glow.style.left=glx+"px";glow.style.top=gly+"px";requestAnimationFrame(glowLoop)}glowLoop();
+    }
+    let keys="";document.addEventListener("keydown",e=>{keys=(keys+e.key.toLowerCase()).slice(-2);if(keys==="hi"){document.querySelector(".logo")?.animate([{transform:"rotate(0)"},{transform:"rotate(-8deg)"},{transform:"rotate(8deg)"},{transform:"rotate(0)"}],{duration:500})}});
+
+    /* =========================================================
+       INITIAL HASH
+       ========================================================= */
+    if(location.hash&&$(location.hash))setTimeout(()=>$(location.hash).scrollIntoView(),0);
+  </script>
+</body>
+</html>
