@@ -66,15 +66,15 @@ You can also use the Live Server extension in Visual Studio Code.
 
 Add your published portfolio URL here:
 
-https://YOUR-USERNAME.github.io/portfolio/
+https://mariellearizala3-lab.github.io/portfolio/
 
 🔗 Project Demo Links
 
 Activity 1 Registration Form:
-https://mariellearizala3-lab.github.io/my-html-projects/student_form.html
+https://mariellearizala3-lab.github.io/Student-registration/student_form.html
 
 Teacher's Day Message Card:
-https://mariellearizala3-lab.github.io/my-html-projects/teacher-day.html
+https://mariellearizala3-lab.github.io/teacher-s-day-message/teacher-day.html
 
 🎯 Purpose
 
